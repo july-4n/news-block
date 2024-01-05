@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Only fresh news</title>
+  <link rel="stylesheet" href="./css/normalize.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <script type="module" src="./js/script.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <div class="container">
+        <div class="header__inner">
+          <div class="logo">
+            <svg width="76" height="40">
+              <use xlink:href="assets/image/icons/sprite.svg#logo"></use>
+            </svg>
+          </div>
+          <div class="search-form header__search">
+            <form action="#" method="get">
+              <div class="custom-input header__input">
+                <input type="search" name="main-search" placeholder="Я хочу узнать про...">
+                <button type="submit" class="custom-input__btn">
+                  <svg width="76" height="40">
+                    <use xlink:href="assets/image/icons/sprite.svg#search"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="custom-select header__select">
+                <select name="country">
+                  <option value="ru">Россия</option>
+                  <option value="ua">Украина</option>
+                  <option value="us">США</option>
+                  <option value="de">Германия</option>
+                  <option value="cz">Чехия</option>
+                  <option value="pl">Польша</option>
+                  <option value="cz">Чехия</option>
+                  <option value="lv">Латвия</option>
+                  <option value="lt">Литва</option>
+                </select>
+                <svg width="20" height="20">
+                  <use xlink:href="assets/image/icons/sprite.svg#drop-down"></use>
+                </svg>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <h1 class="visually-hidden js-title">Портал новостей</h1>
+      <section class="news">
+        <div class="container"></div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__inner">
+          <div class="logo footer__logo">
+            <svg width="76" height="40">
+              <use xlink:href="assets/image/icons/sprite.svg#logo"></use>
+            </svg>
+          </div>
+          <p class="footer__copyright">&copy;&nbsp;2020-2024 News</p>
+          <ul class="socials">
+            <li class="socials__item">
+              <a href="#" class="socials__link">
+                <svg width="20" height="20">
+                  <use xlink:href="assets/image/icons/sprite.svg#twitter"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="socials__item">
+              <a href="#" class="socials__link">
+                <svg width="20" height="20">
+                  <use xlink:href="assets/image/icons/sprite.svg#habr"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="socials__item">
+              <a href="#" class="socials__link">
+                <svg width="20" height="20">
+                  <use xlink:href="assets/image/icons/sprite.svg#vk"></use>
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

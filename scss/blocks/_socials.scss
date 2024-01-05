@@ -1,0 +1,33 @@
+.socials {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  margin: -15px 0 0 -15px;
+  padding: 0;
+
+  list-style: none;
+
+  &__item {
+    margin-top: 15px;
+    margin-left: 15px;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+
+    background-color: #F2994A;
+    border-radius: 50%;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

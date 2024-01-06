@@ -10,6 +10,22 @@ const renderCards = (err, data) => {
   const template = document.createDocumentFragment();
 
   const cards = data.map(item => {
+    const date = new Date(`${item.publishedAt}`);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const formattedHours = hours < 10 ? `0${hours}` : hours;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedTime = `${formattedHours}:${formattedMinutes}`;
+
     const card = document.createElement('li');
     card.className = 'news-card';
     card.innerHTML = `
@@ -26,8 +42,8 @@ const renderCards = (err, data) => {
           ${item.description ? `<p class="news-card__text">${item.description}</p>` : ''}
 
           <div class="news-card__footer">
-            <timer datetime = "${item.publishedAt}" class="news-card__date">16/03/2022
-              <span class="news-card__time">11:06</span>
+            <timer datetime = "${item.publishedAt}" class="news-card__date">${formattedDate}
+              <span class="news-card__time">${formattedTime}</span>
             </timer>
             ${item.author ? `<p class="news-card__author">${item.author}</p>` : ''}
           </div>

@@ -13,23 +13,32 @@ const input = document.querySelector('.custom-input input');
 const wrapperCards = document.createElement('ul');
 wrapperCards.className = 'news__list';
 
-const initNews = () => {
+const initNews = async () => {
   preload.show();
-  return Promise.all([
-    fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=12', {
-      headers: {
-        'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
-      },
-      callback: renderCards,
-    }),
-  ]);
+  const newsFresh = await fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=12', {
+    headers: {
+      'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
+    },
+    callback: renderCards,
+  });
+  return newsFresh;
+
+  // return new Promise ((resolve, reject) => {
+  //   fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=12', {
+  //     headers: {
+  //       'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
+  //     },
+  //     callback: renderCards,
+  //   });
+  // });
 };
+
 
 initNews().then(data => {
   preload.remove();
   const title = renderTitle('Свежие новости');
   news.insertAdjacentHTML('beforebegin', title);
-  wrapperCards.append(...data);
+  wrapperCards.append(data);
   newsContainer.append(wrapperCards);
 });
 
@@ -38,32 +47,39 @@ form.addEventListener('submit', evt => {
 
   const searchValue = input.value;
 
-  const initSearch = () => Promise.all([
-    fetchRequest(`https://newsapi.org/v2/everything?q=${searchValue}&pageSize=8`, {
+  const initSearch = async () => {
+    const searchNews = await fetchRequest(`https://newsapi.org/v2/everything?q=${searchValue}&pageSize=8`, {
       headers: {
         'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
       },
       callback: renderCards,
-    }),
-  ]);
+    });
+    return searchNews;
+  };
 
-  const init = () => Promise.all([
-    fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=4', {
+
+  const init = async () => {
+    const newsContent = await fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=4', {
       headers: {
         'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
       },
       callback: renderCards,
-    }),
-  ]);
+    });
+    return newsContent;
+  };
 
   initSearch().then(data => {
     const arrNews = document.querySelectorAll('.news');
     const titles = document.querySelectorAll('.title-block');
-    titles[0].remove();
-    arrNews[0].remove();
+    arrNews.forEach(news => {
+      news.remove();
+    });
+    titles.forEach(title => {
+      title.remove();
+    });
+    // titles[0].remove();
+    // arrNews[0].remove();
     const result = document.createElement('section');
-    newsContainer.innerHTML = '';
-
     const container = document.createElement('div');
     result.className = 'news';
     container.className = 'container';
@@ -71,9 +87,9 @@ form.addEventListener('submit', evt => {
     const wrapperCards2 = document.createElement('ul');
     wrapperCards2.className = 'news__list';
 
-    wrapperCards2.append(...data);
-
+    wrapperCards2.append(data);
     container.append(wrapperCards2);
+
     const cardLength = wrapperCards2.querySelectorAll('.news-card').length;
     main.prepend(result);
     // eslint-disable-next-line max-len
@@ -90,9 +106,12 @@ form.addEventListener('submit', evt => {
     result.append(container);
     const wrapperCards = document.createElement('ul');
     wrapperCards.className = 'news__list';
-
-    wrapperCards.append(...data);
-
+    wrapperCards.append(data);
     container.append(wrapperCards);
+    main.append(result);
+    console.log(result);
+
+    const title = renderTitle('Свежие новости');
+    result.insertAdjacentHTML('beforebegin', title);
   });
 });

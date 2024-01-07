@@ -1,117 +1,100 @@
 import fetchRequest from './fetchRequest.js';
-import renderCards from './renderCards.js';
+import createCard from './createCard.js';
 import preload from './preload.js';
-import renderTitle from './renderTitle.js';
 
 const news = document.querySelector('.news');
 const newsContainer = news.querySelector('.container');
-
 const main = document.querySelector('main');
 const form = document.querySelector('form');
-const input = document.querySelector('.custom-input input');
 
-const wrapperCards = document.createElement('ul');
-wrapperCards.className = 'news__list';
+const result = document.createElement('section');
+const headlinesWrapper = document.createElement('div');
 
-const initNews = async () => {
-  preload.show();
-  const newsFresh = await fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=12', {
-    headers: {
-      'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
-    },
-    callback: renderCards,
-  });
-  return newsFresh;
+export const renderHeadlines = (country, count) => fetchRequest(`https://newsapi.org/v2/top-headlines?country=${country}`, {
+  method: 'GET',
+  headers: {
+    'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
+  },
+  callback(err, data) {
+    if (err) {
+      console.error(err);
+      return;
+    }
 
-  // return new Promise ((resolve, reject) => {
-  //   fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=12', {
-  //     headers: {
-  //       'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
-  //     },
-  //     callback: renderCards,
-  //   });
-  // });
-};
+    const template = document.createDocumentFragment();
+    preload.show();
+    const newsList = document.createElement('ul');
+    newsList.className = 'news__list';
+    const title = document.createElement('h2');
+    title.classList.add('title', 'title--h2');
+    title.textContent = 'Свежие новости';
+    const articles = data.articles.slice(0, count);
+    const allHeadlines = articles.map((item) => createCard(item));
+    preload.remove();
+    newsList.append(...allHeadlines);
+    template.append(title, newsList);
+    return template;
+  },
+});
 
+export const renderNews = (phrase, count) => fetchRequest(`https://newsapi.org/v2/everything?q=${phrase}`, {
+  method: 'GET',
+  headers: {
+    'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
+  },
+  callback(err, data) {
+    if (err) {
+      console.error(err);
+      return;
+    }
 
-initNews().then(data => {
-  preload.remove();
-  const title = renderTitle('Свежие новости');
-  news.insertAdjacentHTML('beforebegin', title);
-  wrapperCards.append(data);
-  newsContainer.append(wrapperCards);
+    const template = document.createDocumentFragment();
+    const newsList = document.createElement('ul');
+    newsList.className = 'news__list';
+    const title = document.createElement('h2');
+    title.classList.add('title', 'title--h2');
+    title.textContent =
+    `По вашему запросу "${phrase}" найдено ${count} результатов`;
+    const articles = data.articles.slice(0, count);
+    const allArticles = articles.map((item) => createCard(item));
+    newsList.append(...allArticles);
+    template.append(title, newsList);
+    return template;
+  },
+});
+
+renderHeadlines('ru', '12').then(articles => {
+  const newsList = document.createElement('ul');
+  newsList.className = 'news__list';
+  newsContainer.append(articles);
 });
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
 
-  const searchValue = input.value;
+  const formData = new FormData(evt.target);
+  const keywords = Object.fromEntries(formData)['main-search'];
+  const country = Object.fromEntries(formData).country;
 
-  const initSearch = async () => {
-    const searchNews = await fetchRequest(`https://newsapi.org/v2/everything?q=${searchValue}&pageSize=8`, {
-      headers: {
-        'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
-      },
-      callback: renderCards,
+  if (keywords === '') {
+    return;
+  }
+
+  preload.show();
+  Promise.all([renderNews(keywords, 8), renderHeadlines(country, 4)])
+    .then(articles => {
+      preload.remove();
+
+      newsContainer.innerHTML = '';
+      newsContainer.append(articles[0]);
+      headlinesWrapper.innerHTML = '';
+      const wrapperCards2 = document.createElement('ul');
+      wrapperCards2.className = 'news__list';
+      result.className = 'news';
+      headlinesWrapper.className = 'container';
+      result.append(headlinesWrapper);
+      main.append(result);
+
+      headlinesWrapper.append(articles[1]);
     });
-    return searchNews;
-  };
-
-
-  const init = async () => {
-    const newsContent = await fetchRequest('https://newsapi.org/v2/top-headlines?country=ru&pageSize=4', {
-      headers: {
-        'X-Api-Key': '89644bef9fa640d08a93e398d350cfa3',
-      },
-      callback: renderCards,
-    });
-    return newsContent;
-  };
-
-  initSearch().then(data => {
-    const arrNews = document.querySelectorAll('.news');
-    const titles = document.querySelectorAll('.title-block');
-    arrNews.forEach(news => {
-      news.remove();
-    });
-    titles.forEach(title => {
-      title.remove();
-    });
-    // titles[0].remove();
-    // arrNews[0].remove();
-    const result = document.createElement('section');
-    const container = document.createElement('div');
-    result.className = 'news';
-    container.className = 'container';
-    result.append(container);
-    const wrapperCards2 = document.createElement('ul');
-    wrapperCards2.className = 'news__list';
-
-    wrapperCards2.append(data);
-    container.append(wrapperCards2);
-
-    const cardLength = wrapperCards2.querySelectorAll('.news-card').length;
-    main.prepend(result);
-    // eslint-disable-next-line max-len
-    const title = renderTitle(`По вашему запросу "${searchValue}" найдено ${cardLength} результатов`);
-    result.insertAdjacentHTML('beforebegin', title);
-    input.value = '';
-  });
-
-  init().then(data => {
-    const result = document.createElement('section');
-    const container = document.createElement('div');
-    result.className = 'news';
-    container.className = 'container';
-    result.append(container);
-    const wrapperCards = document.createElement('ul');
-    wrapperCards.className = 'news__list';
-    wrapperCards.append(data);
-    container.append(wrapperCards);
-    main.append(result);
-    console.log(result);
-
-    const title = renderTitle('Свежие новости');
-    result.insertAdjacentHTML('beforebegin', title);
-  });
 });

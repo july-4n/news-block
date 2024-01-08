@@ -1,6 +1,7 @@
 import fetchRequest from './fetchRequest.js';
 import createCard from './createCard.js';
 import preload from './preload.js';
+import {pluralize} from './pluralize.js';
 
 const news = document.querySelector('.news');
 const newsContainer = news.querySelector('.container');
@@ -22,7 +23,7 @@ export const renderHeadlines = (country, count) => fetchRequest(`https://newsapi
     }
 
     const template = document.createDocumentFragment();
-    preload.show();
+
     const newsList = document.createElement('ul');
     newsList.className = 'news__list';
     const title = document.createElement('h2');
@@ -30,7 +31,6 @@ export const renderHeadlines = (country, count) => fetchRequest(`https://newsapi
     title.textContent = 'Свежие новости';
     const articles = data.articles.slice(0, count);
     const allHeadlines = articles.map((item) => createCard(item));
-    preload.remove();
     newsList.append(...allHeadlines);
     template.append(title, newsList);
     return template;
@@ -53,20 +53,30 @@ export const renderNews = (phrase, count) => fetchRequest(`https://newsapi.org/v
     newsList.className = 'news__list';
     const title = document.createElement('h2');
     title.classList.add('title', 'title--h2');
-    title.textContent =
-    `По вашему запросу "${phrase}" найдено ${count} результатов`;
+
     const articles = data.articles.slice(0, count);
     const allArticles = articles.map((item) => createCard(item));
     newsList.append(...allArticles);
+    const cardLength = newsList.querySelectorAll('.news-card').length;
+    const words = ['найден', 'найдено'];
+    const resultPlural = pluralize(cardLength, words);
+    const words2 = ['результат', 'результатов', 'результата'];
+    const res = true;
+    const resultPlural2 = pluralize(cardLength, words2, res);
+    // eslint-disable-next-line max-len
+    title.textContent = `По вашему запросу "${phrase}" ${resultPlural} ${cardLength} ${resultPlural2}`;
+
     template.append(title, newsList);
     return template;
   },
 });
 
+preload.show();
 renderHeadlines('ru', '12').then(articles => {
   const newsList = document.createElement('ul');
   newsList.className = 'news__list';
   newsContainer.append(articles);
+  preload.remove();
 });
 
 form.addEventListener('submit', evt => {
